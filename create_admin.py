@@ -9,6 +9,7 @@ import sys
 from app import create_app, db
 from app.models import Admin
 from app.utils import generate_access_token
+from app.auth import generate_jwt
 
 def create_admin(username):
     """Create a new admin with a generated access token"""
@@ -33,13 +34,16 @@ def create_admin(username):
         try:
             db.session.add(admin)
             db.session.commit()
+
+            # Generate JWT
+            jwt_token = generate_jwt(username, 'admin', access_token)
             
             print(f"Admin created successfully!")
             print(f"Username: {username}")
-            print(f"Access Token: {access_token}")
+            print(f"JWT Token: {jwt_token}")
             print(f"Admin ID: {admin.id}")
             print(f"Created At: {admin.created_at}")
-            print("\nSave this access token securely - it won't be shown again!")
+            print("\nSave this JWT token securely - it won't be shown again!")
             print("This token provides full administrative access to the system.")
             
             return True

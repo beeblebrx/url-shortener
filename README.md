@@ -4,7 +4,7 @@ It's a URL shortener built with Python 3, Flask, and PostgreSQL. Not actually me
 
 ## Features
 
-- **User Authentication**: Token-based authentication for creating short URLs
+- **User Authentication**: JWT-based authentication for creating short URLs
 - **URL Expiration**: URLs expire after some configurable time
 - **Permanent URLs**: Option to create non-expiring URLs
 - **Click Tracking**: Track usage statistics for each URL
@@ -104,7 +104,7 @@ Create an admin user:
 python create_admin.py --username admin_user
 ```
 
-**Important**: Save the generated access tokens securely!
+**Important**: Save the generated JWT tokens securely!
 
 ### 7. Run the Application
 
@@ -140,7 +140,7 @@ The application will be available at `http://localhost:5000`
 
 ```bash
 curl -X POST http://localhost:5000/shorten \
-  -H "Authorization: Bearer YOUR_USER_TOKEN" \
+  -H "Authorization: Bearer YOUR_USER_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "url": "https://example.com/very/long/url",
@@ -164,40 +164,42 @@ Response:
 
 ```bash
 curl -X GET "http://localhost:5000/admin/urls?page=1&per_page=20&sort_by=created_at&order=desc" \
-  -H "Authorization: Bearer YOUR_ADMIN_TOKEN"
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
 ```
 
 ### Get System Statistics (Admin)
 
 ```bash
 curl -X GET http://localhost:5000/admin/stats \
-  -H "Authorization: Bearer YOUR_ADMIN_TOKEN"
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
 ```
 
 ## Authentication
 
-All API requests that require authentication must include the `Authorization` header:
+Authentication is handled via JSON Web Tokens (JWT). All protected endpoints require a valid JWT to be passed in the `Authorization` header with the `Bearer` scheme.
 
 ```
-Authorization: Bearer YOUR_ACCESS_TOKEN
+Authorization: Bearer YOUR_JWT
 ```
 
-- **User tokens**: Required for creating short URLs
-- **Admin tokens**: Required for administrative operations
+A JWT contains the user's `username`, `role` (either `user` or `admin`), and an `access_token`. The server validates the JWT signature and checks if the user is active and the `access_token` matches the one in the database.
+
+- **User JWTs**: Required for creating short URLs and managing user-specific resources.
+- **Admin JWTs**: Required for all administrative operations.
 
 ## Database Schema
 
 ### Users Table
 - `id` - Primary key
 - `username` - Unique username
-- `access_token` - Authentication token
+- `access_token` - Access token used within JWT
 - `created_at` - Creation timestamp
 - `is_active` - Account status
 
 ### Admins Table
 - `id` - Primary key
 - `username` - Unique username
-- `access_token` - Authentication token
+- `access_token` - Access token used within JWT
 - `created_at` - Creation timestamp
 - `is_active` - Account status
 
@@ -241,4 +243,3 @@ flask db current
 # Show migration history
 flask db history
 ```
-

@@ -9,6 +9,7 @@ import sys
 from app import create_app, db
 from app.models import User
 from app.utils import generate_access_token
+from app.auth import generate_jwt
 
 def create_user(username):
     """Create a new user with a generated access token"""
@@ -33,13 +34,16 @@ def create_user(username):
         try:
             db.session.add(user)
             db.session.commit()
+
+            # Generate JWT
+            jwt_token = generate_jwt(username, 'user', access_token)
             
             print(f"User created successfully!")
             print(f"Username: {username}")
-            print(f"Access Token: {access_token}")
+            print(f"JWT Token: {jwt_token}")
             print(f"User ID: {user.id}")
             print(f"Created At: {user.created_at}")
-            print("\nSave this access token securely - it won't be shown again!")
+            print("\nSave this JWT token securely - it won't be shown again!")
             
             return True
             
