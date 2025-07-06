@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app import db
 import os
 
@@ -8,7 +8,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     access_token = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True)
     
     # Relationship with URLs
@@ -23,7 +23,7 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     access_token = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True)
     
     def __repr__(self):
@@ -36,30 +36,30 @@ class URL(db.Model):
     original_url = db.Column(db.Text, nullable=False)
     short_code = db.Column(db.String(10), unique=True, nullable=False, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    expires_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    expires_at = db.Column(db.DateTime(timezone=True), nullable=True)
     is_permanent = db.Column(db.Boolean, default=False)
     click_count = db.Column(db.Integer, default=0)
-    last_accessed = db.Column(db.DateTime, nullable=True)
+    last_accessed = db.Column(db.DateTime(timezone=True), nullable=True)
     
     def __init__(self, **kwargs):
         super(URL, self).__init__(**kwargs)
         if not self.is_permanent and not self.expires_at:
             # Set default expiration to 6 months from now
             expiration_months = int(os.getenv('DEFAULT_EXPIRATION_MONTHS', 6))
-            self.expires_at = datetime.utcnow() + timedelta(days=30 * expiration_months)
+            self.expires_at = datetime.now(timezone.utc) + timedelta(days=30 * expiration_months)
     
     @property
     def is_expired(self):
         """Check if the URL has expired"""
         if self.is_permanent:
             return False
-        return self.expires_at and datetime.utcnow() > self.expires_at
+        return self.expires_at and datetime.now(timezone.utc) > self.expires_at
     
     def increment_click_count(self):
         """Increment click count and update last accessed time"""
         self.click_count += 1
-        self.last_accessed = datetime.utcnow()
+        self.last_accessed = datetime.now(timezone.utc)
         db.session.commit()
     
     def to_dict(self, include_user=False):

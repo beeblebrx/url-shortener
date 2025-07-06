@@ -6,7 +6,9 @@ load_dotenv()
 
 class Config:
     """Base configuration class"""
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("No SECRET_KEY set for the application")
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://username:password@localhost:5432/url_shortener')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     

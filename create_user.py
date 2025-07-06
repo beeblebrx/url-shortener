@@ -22,6 +22,9 @@ def create_user(username):
             print(f"Error: User '{username}' already exists!")
             return False
         
+        from app.config import config
+        app.config.from_object(config['development'])
+
         # Generate access token
         access_token = generate_access_token()
         
@@ -42,7 +45,7 @@ def create_user(username):
             print(f"Username: {username}")
             print(f"JWT Token: {jwt_token}")
             print(f"User ID: {user.id}")
-            print(f"Created At: {user.created_at}")
+            print(f"Created At: {user.created_at.isoformat() if user.created_at else None}")
             print("\nSave this JWT token securely - it won't be shown again!")
             
             return True
