@@ -65,7 +65,6 @@ class URL(db.Model):
     def to_dict(self, include_user=False):
         """Convert URL object to dictionary for JSON responses"""
         result = {
-            'id': self.id,
             'original_url': self.original_url,
             'short_code': self.short_code,
             'created_at': self.created_at.isoformat() if self.created_at else None,
@@ -77,7 +76,6 @@ class URL(db.Model):
         
         if include_user and self.user:
             result['user'] = {
-                'id': self.user.id,
                 'username': self.user.username
             }
         
