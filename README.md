@@ -118,6 +118,7 @@ The application will be available at `http://localhost:5000`
 
 ### Public Endpoints
 
+- `GET /urls` - List all URLs with pagination and sorting
 - `GET /<short_code>` - Redirect to original URL
 - `GET /stats/<short_code>` - Get URL statistics
 - `GET /health` - Health check
@@ -129,7 +130,6 @@ The application will be available at `http://localhost:5000`
 
 ### Admin Endpoints (Require Admin Authentication)
 
-- `GET /admin/urls` - List all URLs with pagination and sorting
 - `DELETE /admin/cleanup` - Remove expired URLs
 - `GET /admin/stats` - Get system-wide statistics
 - `GET /admin/users` - List all users
