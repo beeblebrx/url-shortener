@@ -160,11 +160,10 @@ Response:
 }
 ```
 
-### List URLs (Admin)
+### List URLs
 
 ```bash
-curl -X GET "http://localhost:5000/admin/urls?page=1&per_page=20&sort_by=created_at&order=desc" \
-  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
+curl -X GET "http://localhost:5000/urls?page=1&per_page=20&sort_by=created_at&order=desc"
 ```
 
 ### Get System Statistics (Admin)
