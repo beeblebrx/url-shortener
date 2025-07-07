@@ -1,6 +1,9 @@
 from flask import Blueprint, redirect, jsonify, abort, request
-from app.models import URL
+from app.models import User, URL
 from app import db
+from app.auth import generate_jwt
+import bcrypt
+import secrets
 
 public_bp = Blueprint('public', __name__)
 
@@ -46,6 +49,34 @@ def get_url_stats(short_code):
         'click_count': url.click_count,
         'last_accessed': url.last_accessed.isoformat() if url.last_accessed else None
     })
+
+@public_bp.route('/register', methods=['POST'])
+def register():
+    """Register a new user"""
+    data = request.get_json()
+    if not data or not data.get('username') or not data.get('password'):
+        return jsonify({'error': 'Username and password are required'}), 400
+
+    username = data['username']
+    password = data['password']
+
+    if User.query.filter_by(username=username).first():
+        return jsonify({'error': 'Username already exists'}), 409
+
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    access_token = secrets.token_hex(16)
+
+    new_user = User(
+        username=username,
+        password=hashed_password.decode('utf-8'),
+        access_token=access_token
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    jwt_token = generate_jwt(username, 'user', access_token)
+
+    return jsonify({'token': jwt_token}), 201
 
 @public_bp.route('/health')
 def health_check():
