@@ -78,6 +78,28 @@ def register():
 
     return jsonify({'token': jwt_token}), 201
 
+@public_bp.route('/login', methods=['POST'])
+def login():
+    """Log in a user"""
+    data = request.get_json()
+    if not data or not data.get('username') or not data.get('password'):
+        return jsonify({'error': 'Username and password are required'}), 400
+
+    username = data['username']
+    password = data['password']
+
+    user = User.query.filter_by(username=username).first()
+    if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({'error': 'Invalid username or password'}), 401
+
+    # Generate a new access token for the user
+    user.access_token = secrets.token_hex(16)
+    db.session.commit()
+
+    jwt_token = generate_jwt(username, 'user', user.access_token)
+
+    return jsonify({'token': jwt_token}), 200
+
 @public_bp.route('/health')
 def health_check():
     """Health check endpoint"""
