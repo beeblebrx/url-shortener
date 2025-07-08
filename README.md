@@ -20,6 +20,8 @@ url-shortener/
 │   ├── models.py            # Database models (User, Admin, URL)
 │   ├── auth.py              # Authentication middleware
 │   ├── utils.py             # Utility functions
+|   ├── config.py            # Configuration
+|   ├── client               # React frontend
 │   └── routes/
 │       ├── __init__.py
 │       ├── public.py        # Public endpoints (redirect, stats)
@@ -31,7 +33,8 @@ url-shortener/
 ├── create_user.py           # Script to create users
 ├── create_admin.py          # Script to create admins
 ├── .env                     # Environment variables
-└── README.md               # This file
+├── docker-compose.yml       # Development containers (database, pgAdmin 4)
+└── README.md                # This file
 ```
 
 ## Setup Instructions
