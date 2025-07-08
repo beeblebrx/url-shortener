@@ -21,3 +21,7 @@ venv.bak/
 # Temporary files
 *.tmp
 *.temp
+
+# Build directories and packages
+app/client/dist/
+app/client/node_modules/

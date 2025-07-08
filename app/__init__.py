@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 import os
 
 # Initialize extensions
@@ -20,6 +21,12 @@ def create_app(config_name=None):
     # Initialize extensions with app
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Configure CORS
+    CORS(app, 
+         origins=['http://localhost:3000', 'http://192.168.1.242:3000'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+         supports_credentials=True)
     
     # Import models to ensure they're registered with SQLAlchemy
     from app import models
