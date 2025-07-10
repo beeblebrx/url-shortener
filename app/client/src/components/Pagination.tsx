@@ -1,4 +1,3 @@
-import React from 'react';
 import { PaginationInfo } from '../types';
 
 interface PaginationProps {

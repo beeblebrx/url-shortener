@@ -37,4 +37,22 @@ export class ApiService {
       throw new Error('An unexpected error occurred');
     }
   }
+
+  static async shortenUrl(url: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/shorten`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Login required to create shortened URLs');
+      }
+      const errorData: ApiError = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+  }
 }

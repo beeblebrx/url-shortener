@@ -1,6 +1,5 @@
-import React from 'react';
 import { UrlItem as UrlItemType } from '../types';
-import { formatDate, formatRelativeDate, isExpired, truncateUrl, formatClickCount } from '../utils/formatters';
+import { formatRelativeDate, isExpired, truncateUrl, formatClickCount } from '../utils/formatters';
 
 interface UrlItemProps {
   url: UrlItemType;

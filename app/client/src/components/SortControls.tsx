@@ -1,4 +1,3 @@
-import React from 'react';
 import { SortField, SortOrder } from '../types';
 
 interface SortControlsProps {

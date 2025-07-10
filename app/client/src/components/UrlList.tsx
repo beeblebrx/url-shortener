@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ApiResponse, SortField, SortOrder } from '../types';
 import { ApiService } from '../services/api';
 import UrlItem from './UrlItem';
