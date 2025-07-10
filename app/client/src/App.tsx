@@ -89,6 +89,7 @@ const AppContent: React.FC = () => {
         <ShortenUrlForm />
         {token && (
           <UrlList
+            title="Your shortened URLs"
             data={urlData}
             loading={loading}
             error={error}

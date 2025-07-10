@@ -5,6 +5,7 @@ import Pagination from './Pagination';
 import SortControls from './SortControls';
 
 interface UrlListProps {
+  title?: string
   data: ApiResponse | null;
   loading: boolean;
   error: string | null;
@@ -15,6 +16,7 @@ interface UrlListProps {
 }
 
 const UrlList: React.FC<UrlListProps> = ({
+  title,
   data,
   loading,
   error,
@@ -72,6 +74,7 @@ const UrlList: React.FC<UrlListProps> = ({
 
   return (
     <div className='url-list'>
+      <h2 className='url-list-title'>{title}</h2>
       <SortControls
         sortBy={sortBy}
         order={order}
@@ -89,7 +92,6 @@ const UrlList: React.FC<UrlListProps> = ({
               <th>Status</th>
               <th>Clicks</th>
               <th>Dates</th>
-              <th>User</th>
             </tr>
           </thead>
           <tbody>

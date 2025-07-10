@@ -117,6 +117,12 @@ body {
   margin-bottom: 24px;
 }
 
+.url-list-title {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 16px;
+}
+
 .url-table {
   width: 100%;
   border-collapse: collapse;

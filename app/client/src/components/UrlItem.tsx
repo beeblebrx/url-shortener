@@ -61,13 +61,6 @@ const UrlItem: React.FC<UrlItemProps> = ({ url }) => {
           )}
         </div>
       </td>
-      <td>
-        {url.user && (
-          <div className="url-user">
-            {url.user.username}
-          </div>
-        )}
-      </td>
     </tr>
   );
 };
