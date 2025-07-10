@@ -10,7 +10,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: #2097a0;
   color: #333;
   line-height: 1.6;
 }
@@ -280,7 +280,7 @@ body {
 .shorten-url-form input {
   flex-grow: 1;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   border-radius: 4px;
   font-size: 1rem;
 }
