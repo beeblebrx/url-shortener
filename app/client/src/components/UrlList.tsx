@@ -1,56 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ApiResponse, SortField, SortOrder } from '../types';
-import { ApiService } from '../services/api';
 import UrlItem from './UrlItem';
 import Pagination from './Pagination';
 import SortControls from './SortControls';
 
-const UrlList: React.FC = () => {
-  const [data, setData] = useState<ApiResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface UrlListProps {
+  data: ApiResponse | null;
+  loading: boolean;
+  error: string | null;
+  onPageChange: (page: number) => void;
+  onSortChange: (sortBy: SortField, order: SortOrder) => void;
+  onPerPageChange: (perPage: number) => void;
+  onRetry: () => void;
+}
+
+const UrlList: React.FC<UrlListProps> = ({
+  data,
+  loading,
+  error,
+  onPageChange,
+  onSortChange,
+  onPerPageChange,
+  onRetry,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
   const [sortBy, setSortBy] = useState<SortField>('created_at');
   const [order, setOrder] = useState<SortOrder>('desc');
 
-  const fetchUrls = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await ApiService.fetchUrls({
-        page: currentPage,
-        per_page: perPage,
-        sort_by: sortBy,
-        order: order,
-      });
-      
-      setData(response);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUrls();
-  }, [currentPage, perPage, sortBy, order]);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    onPageChange(page);
   };
 
   const handleSortChange = (newSortBy: SortField, newOrder: SortOrder) => {
     setSortBy(newSortBy);
     setOrder(newOrder);
     setCurrentPage(1); // Reset to first page when sorting changes
+    onSortChange(newSortBy, newOrder);
   };
 
   const handlePerPageChange = (newPerPage: number) => {
     setPerPage(newPerPage);
     setCurrentPage(1); // Reset to first page when per page changes
+    onPerPageChange(newPerPage);
   };
 
   if (loading) {
@@ -61,7 +54,7 @@ const UrlList: React.FC = () => {
     return (
       <div className="error">
         <strong>Error:</strong> {error}
-        <button onClick={fetchUrls} style={{ marginLeft: '10px' }}>
+        <button onClick={onRetry} style={{ marginLeft: '10px' }}>
           Retry
         </button>
       </div>
@@ -78,7 +71,7 @@ const UrlList: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className='url-list'>
       <SortControls
         sortBy={sortBy}
         order={order}
@@ -87,7 +80,7 @@ const UrlList: React.FC = () => {
         onPerPageChange={handlePerPageChange}
       />
       
-      <div className="url-list">
+      <div>
         <table className="url-table">
           <thead>
             <tr>

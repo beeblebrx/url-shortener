@@ -10,7 +10,7 @@ export interface FetchUrlsParams {
 }
 
 export class ApiService {
-  static async fetchUrls(params: FetchUrlsParams = {}): Promise<ApiResponse> {
+  static async fetchUrls(jwtToken: string, params: FetchUrlsParams = {}): Promise<ApiResponse> {
     const searchParams = new URLSearchParams();
     
     if (params.page) searchParams.append('page', params.page.toString());
@@ -18,10 +18,13 @@ export class ApiService {
     if (params.sort_by) searchParams.append('sort_by', params.sort_by);
     if (params.order) searchParams.append('order', params.order);
 
-    const url = `${API_BASE_URL}/urls${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    const url = `${API_BASE_URL}/my-urls${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {'Authorization': `Bearer ${jwtToken}`}
+      });
       
       if (!response.ok) {
         const errorData: ApiError = await response.json();
