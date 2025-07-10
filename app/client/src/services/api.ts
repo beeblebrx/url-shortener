@@ -39,11 +39,17 @@ export class ApiService {
   }
 
   static async shortenUrl(url: string): Promise<void> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    const token = localStorage.getItem('token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({ url }),
     });
 
@@ -54,5 +60,22 @@ export class ApiService {
       const errorData: ApiError = await response.json();
       throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
+  }
+
+  static async login(username: string, password: string): Promise<{ token: string }> {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+      const errorData: ApiError = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
   }
 }

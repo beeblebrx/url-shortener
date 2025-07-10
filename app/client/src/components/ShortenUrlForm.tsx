@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiService } from '../services/api';
+import { useToken } from '../contexts/TokenContext';
 
 const ShortenUrlForm: React.FC = () => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { token } = useToken();
+
+  useEffect(() => {
+    // Clear the error text after a successful login.
+    if (token) setError(null);
+  }, [token])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (!token) {
+      setError('Login required to create shortened URLs');
+      return;
+    }
+  
+    setLoading(true);
 
     try {
       await ApiService.shortenUrl(url);
