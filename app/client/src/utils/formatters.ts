@@ -1,13 +1,33 @@
-import { format, parseISO, isValid } from 'date-fns';
+import { parseISO, isValid, formatDistanceToNowStrict } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 export const formatDate = (dateString: string | null): string => {
   if (!dateString) return 'Never';
-  
+
   try {
-    const date = parseISO(dateString);
+    // Extract timezone from the original string
+    const timezoneMatch = dateString.match(/([+-]\d{2}:?\d{2}|Z)$/);
+    
+    if (timezoneMatch) {
+      const date = parseISO(dateString);
+      if (!isValid(date)) return 'Invalid date';
+      
+      const tz = timezoneMatch[1];
+      if (tz === 'Z') {
+        // UTC timezone - format in UTC and show +00
+        return formatInTimeZone(date, 'UTC', 'MMM dd, yyyy HH:mm') + ' +00';
+      } else {
+        // Offset timezone - format in that timezone and append the original offset
+        return formatInTimeZone(date, tz, 'MMM dd, yyyy HH:mm') + ' ' + tz;
+      }
+    }
+    
+    // No timezone info - treat as UTC by appending Z and parsing
+    const utcDateString = dateString + 'Z';
+    const date = parseISO(utcDateString);
     if (!isValid(date)) return 'Invalid date';
     
-    return format(date, 'MMM dd, yyyy HH:mm');
+    return formatInTimeZone(date, 'UTC', 'MMM dd, yyyy HH:mm') + ' +00';
   } catch (error) {
     return 'Invalid date';
   }
@@ -15,23 +35,19 @@ export const formatDate = (dateString: string | null): string => {
 
 export const formatRelativeDate = (dateString: string | null): string => {
   if (!dateString) return 'Never';
-  
+
   try {
     const date = parseISO(dateString);
     if (!isValid(date)) return 'Invalid date';
-    
+
     const now = new Date();
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-    
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    
-    return format(date, 'MMM dd, yyyy');
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds >= 0 && diffInSeconds < 60) {
+      return 'Just now';
+    }
+
+    return formatDistanceToNowStrict(date, { addSuffix: true });
   } catch (error) {
     return 'Invalid date';
   }
