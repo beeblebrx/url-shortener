@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { ApiService } from '../services/api';
 import { useToken } from '../contexts/TokenContext';
 
-const ShortenUrlForm: React.FC = () => {
+interface ShortenUrlFormProps {
+  onUrlAdded: () => void;
+}
+
+const ShortenUrlForm: React.FC<ShortenUrlFormProps> = ({ onUrlAdded }) => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,7 +31,7 @@ const ShortenUrlForm: React.FC = () => {
     try {
       await ApiService.shortenUrl(url);
       setUrl('');
-      // TODO: Add success message or redirect
+      onUrlAdded();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

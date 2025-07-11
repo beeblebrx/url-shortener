@@ -69,6 +69,10 @@ const AppContent: React.FC = () => {
     setCurrentPage(1);
   };
 
+  const handleUrlAdded = () => {
+    fetchUrls();
+  }
+
   return (
     <div className="container">
       <header className="header">
@@ -86,7 +90,7 @@ const AppContent: React.FC = () => {
       </header>
       
       <main>
-        <ShortenUrlForm />
+        <ShortenUrlForm onUrlAdded={handleUrlAdded}/>
         {token && (
           <UrlList
             title="Your shortened URLs"
