@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import ShortenUrlForm from './components/ShortenUrlForm';
 import Login from './components/Login';
 import UrlList from './components/UrlList';
+import ErrorMessage from './components/Error';
+import { ErrorWithStatus } from './services/ErrorWithCode';
 import { TokenProvider, useToken } from './contexts/TokenContext';
 import { ApiService } from './services/api';
 import { ApiResponse, SortField, SortOrder } from './types';
@@ -32,6 +34,9 @@ const AppContent: React.FC = () => {
       });
       setUrlData(response);
     } catch (err) {
+      if ((err as ErrorWithStatus).status === 401) {
+        setToken(null);
+      }
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -91,17 +96,19 @@ const AppContent: React.FC = () => {
       
       <main>
         <ShortenUrlForm onUrlAdded={handleUrlAdded}/>
-        {token && (
+        {token && !error && (
           <UrlList
             title="Your shortened URLs"
             data={urlData}
             loading={loading}
-            error={error}
             onPageChange={handlePageChange}
             onSortChange={handleSortChange}
             onPerPageChange={handlePerPageChange}
-            onRetry={fetchUrls}
+
           />
+        )}
+        {error && (
+          <ErrorMessage error={error} />
         )}
       </main>
 

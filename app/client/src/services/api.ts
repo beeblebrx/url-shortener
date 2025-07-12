@@ -1,4 +1,5 @@
 import { ApiResponse, ApiError, SortField, SortOrder } from '../types';
+import { ErrorWithStatus } from './ErrorWithCode';
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -28,7 +29,7 @@ export class ApiService {
       
       if (!response.ok) {
         const errorData: ApiError = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        throw new ErrorWithStatus(errorData.error || `HTTP error! status: ${response.status}`, response.status);
       }
 
       const data: ApiResponse = await response.json();

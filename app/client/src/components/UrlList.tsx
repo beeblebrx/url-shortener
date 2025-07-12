@@ -8,22 +8,18 @@ interface UrlListProps {
   title?: string
   data: ApiResponse | null;
   loading: boolean;
-  error: string | null;
   onPageChange: (page: number) => void;
   onSortChange: (sortBy: SortField, order: SortOrder) => void;
   onPerPageChange: (perPage: number) => void;
-  onRetry: () => void;
 }
 
 const UrlList: React.FC<UrlListProps> = ({
   title,
   data,
   loading,
-  error,
   onPageChange,
   onSortChange,
   onPerPageChange,
-  onRetry,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(20);
@@ -50,17 +46,6 @@ const UrlList: React.FC<UrlListProps> = ({
 
   if (loading) {
     return <div className="loading">Loading URLs...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="error">
-        <strong>Error:</strong> {error}
-        <button onClick={onRetry} style={{ marginLeft: '10px' }}>
-          Retry
-        </button>
-      </div>
-    );
   }
 
   if (!data || data.urls.length === 0) {

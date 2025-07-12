@@ -48,7 +48,7 @@ def require_user_auth(f):
             
             g.current_user = user
         except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
+            return jsonify({'error': 'Session has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token'}), 401
         
@@ -87,7 +87,7 @@ def require_admin_auth(f):
             
             g.current_admin = admin
         except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
+            return jsonify({'error': 'Session has expired'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Invalid token'}), 401
             
