@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ApiService } from '../services/api';
-import { useToken } from '../contexts/TokenContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ShortenUrlFormProps {
   onUrlAdded: () => void;
@@ -10,18 +10,18 @@ const ShortenUrlForm: React.FC<ShortenUrlFormProps> = ({ onUrlAdded }) => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { token } = useToken();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Clear the error text after a successful login.
-    if (token) setError(null);
-  }, [token])
+    if (isAuthenticated) setError(null);
+  }, [isAuthenticated])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!token) {
+    if (!isAuthenticated) {
       setError('Login required to create shortened URLs');
       return;
     }

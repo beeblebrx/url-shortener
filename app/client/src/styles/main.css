@@ -321,6 +321,14 @@ body {
   font-weight: 500;
 }
 
+.auth-controls {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
 .auth-controls button {
   padding: 10px 18px;
   border: none;

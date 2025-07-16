@@ -1,7 +1,7 @@
-from flask import Blueprint, redirect, jsonify, abort, request
+from flask import Blueprint, redirect, jsonify, abort, request, make_response
 from app.models import User, URL
 from app import db
-from app.auth import generate_jwt
+from app.auth import generate_jwt, require_user_auth, get_current_user
 import bcrypt
 import secrets
 
@@ -76,7 +76,13 @@ def register():
 
     jwt_token = generate_jwt(username, 'user', access_token)
 
-    return jsonify({'token': jwt_token}), 201
+    response = make_response(jsonify({}), 201)
+    response.set_cookie('auth_token', jwt_token, 
+                       httponly=True, 
+                       secure=False,  # Set to True for production HTTPS
+                       samesite='Lax',
+                       max_age=86400)  # 24 hours
+    return response
 
 @public_bp.route('/login', methods=['POST'])
 def login():
@@ -98,7 +104,32 @@ def login():
 
     jwt_token = generate_jwt(username, 'user', user.access_token)
 
-    return jsonify({'token': jwt_token}), 200
+    response = make_response(jsonify({}), 200)
+    response.set_cookie('auth_token', jwt_token, 
+                       httponly=True, 
+                       secure=False,  # Set to True for production HTTPS
+                       samesite='Lax',
+                       max_age=86400)  # 24 hours
+    return response
+
+@public_bp.route('/logout', methods=['POST'])
+@require_user_auth
+def logout():
+    """Log out a user, nullify their access token, and clear the auth cookie"""
+    current_user = get_current_user()
+    
+    if current_user:
+        current_user.access_token = None
+        db.session.commit()
+
+    response = make_response(jsonify({}), 200)
+    response.set_cookie('auth_token', '', 
+                       httponly=True, 
+                       secure=False,  # Set to True for production HTTPS
+                       samesite='Lax',
+                       expires=0)  # Expire immediately
+    
+    return response
 
 @public_bp.route('/health')
 def health_check():

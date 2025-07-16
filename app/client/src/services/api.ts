@@ -11,7 +11,7 @@ export interface FetchUrlsParams {
 }
 
 export class ApiService {
-  static async fetchUrls(jwtToken: string, params: FetchUrlsParams = {}): Promise<ApiResponse> {
+  static async fetchUrls(params: FetchUrlsParams = {}): Promise<ApiResponse> {
     const searchParams = new URLSearchParams();
     
     if (params.page) searchParams.append('page', params.page.toString());
@@ -24,7 +24,7 @@ export class ApiService {
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: {'Authorization': `Bearer ${jwtToken}`}
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -43,17 +43,12 @@ export class ApiService {
   }
 
   static async shortenUrl(url: string): Promise<void> {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
     const response = await fetch(`${API_BASE_URL}/shorten`, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
       body: JSON.stringify({ url }),
     });
 
@@ -66,12 +61,13 @@ export class ApiService {
     }
   }
 
-  static async login(username: string, password: string): Promise<{ token: string }> {
+  static async login(username: string, password: string): Promise<{ success: boolean; message: string }> {
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({ username, password }),
     });
 
@@ -81,5 +77,36 @@ export class ApiService {
     }
 
     return response.json();
+  }
+
+  static async logout(): Promise<{ success: boolean; message: string }> {
+    const response = await fetch(`${API_BASE_URL}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData: ApiError = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  static async checkAuthStatus(): Promise<{ authenticated: boolean; username?: string; user_id?: number }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth-status`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        return response.json();
+      } else {
+        return { authenticated: false };
+      }
+    } catch (error) {
+      return { authenticated: false };
+    }
   }
 }

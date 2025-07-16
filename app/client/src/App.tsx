@@ -4,13 +4,13 @@ import Login from './components/Login';
 import UrlList from './components/UrlList';
 import ErrorMessage from './components/Error';
 import { ErrorWithStatus } from './services/ErrorWithCode';
-import { TokenProvider, useToken } from './contexts/TokenContext';
+import { TokenProvider, useAuth } from './contexts/AuthContext';
 import { ApiService } from './services/api';
 import { ApiResponse, SortField, SortOrder } from './types';
 import './styles/main.css';
 
 const AppContent: React.FC = () => {
-  const { token, setToken } = useToken();
+  const { isAuthenticated, logout, username } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [urlData, setUrlData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,12 +21,12 @@ const AppContent: React.FC = () => {
   const [order, setOrder] = useState<SortOrder>('desc');
 
   const fetchUrls = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     setLoading(true);
     setError(null);
     try {
-      const response = await ApiService.fetchUrls(token, {
+      const response = await ApiService.fetchUrls({
         page: currentPage,
         per_page: perPage,
         sort_by: sortBy,
@@ -35,7 +35,7 @@ const AppContent: React.FC = () => {
       setUrlData(response);
     } catch (err) {
       if ((err as ErrorWithStatus).status === 401) {
-        setToken(null);
+        await logout();
       }
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -44,18 +44,17 @@ const AppContent: React.FC = () => {
   };
 
   useEffect(() => {
-    if (token) {
+    if (isAuthenticated) {
       fetchUrls();
     }
-  }, [token, currentPage, perPage, sortBy, order]);
+  }, [isAuthenticated, currentPage, perPage, sortBy, order]);
 
-  const handleLoginSuccess = (newToken: string) => {
-    setToken(newToken);
+  const handleLoginSuccess = () => {
     setShowLogin(false);
   };
 
-  const handleLogout = () => {
-    setToken(null);
+  const handleLogout = async () => {
+    await logout();
     setUrlData(null);
   };
 
@@ -86,8 +85,11 @@ const AppContent: React.FC = () => {
           <p>Nobody wants your ugly long URLs!</p>
         </div>
         <div className="auth-controls">
-          {token ? (
-            <button onClick={handleLogout}>Logout</button>
+          {isAuthenticated ? (
+            <>
+              <span>Welcome, {username}!</span>
+              <button onClick={handleLogout}>Logout</button>
+            </>
           ) : (
             <button onClick={() => setShowLogin(true)}>Login</button>
           )}
@@ -96,7 +98,7 @@ const AppContent: React.FC = () => {
       
       <main>
         <ShortenUrlForm onUrlAdded={handleUrlAdded}/>
-        {token && !error && (
+        {isAuthenticated && !error && (
           <UrlList
             title="Your shortened URLs"
             data={urlData}

@@ -6,6 +6,16 @@ from app import db
 
 user_bp = Blueprint('user', __name__)
 
+@user_bp.route('/auth-status', methods=['GET'])
+@require_user_auth
+def auth_status():
+    """Check authentication status and return current user info"""
+    current_user = get_current_user()
+    return jsonify({
+        'authenticated': True,
+        'username': current_user.username,
+    })
+
 @user_bp.route('/shorten', methods=['POST'])
 @require_user_auth
 def shorten_url():

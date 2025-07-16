@@ -21,17 +21,10 @@ def require_user_auth(f):
     """Decorator to require user authentication"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
+        token = request.cookies.get('auth_token')
         
-        if not auth_header:
-            return jsonify({'error': 'Authorization header is required'}), 401
-        
-        try:
-            token_type, token = auth_header.split(' ', 1)
-            if token_type.lower() != 'bearer':
-                return jsonify({'error': 'Invalid authorization header format. Use "Bearer <token>"'}), 401
-        except ValueError:
-            return jsonify({'error': 'Invalid authorization header format. Use "Bearer <token>"'}), 401
+        if not token:
+            return jsonify({'error': 'Authentication required'}), 401
         
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
@@ -60,17 +53,10 @@ def require_admin_auth(f):
     """Decorator to require admin authentication"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
+        token = request.cookies.get('auth_token')
         
-        if not auth_header:
-            return jsonify({'error': 'Authorization header is required'}), 401
-        
-        try:
-            token_type, token = auth_header.split(' ', 1)
-            if token_type.lower() != 'bearer':
-                return jsonify({'error': 'Invalid authorization header format. Use "Bearer <token>"'}), 401
-        except ValueError:
-            return jsonify({'error': 'Invalid authorization header format. Use "Bearer <token>"'}), 401
+        if not token:
+            return jsonify({'error': 'Authentication required'}), 401
         
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])

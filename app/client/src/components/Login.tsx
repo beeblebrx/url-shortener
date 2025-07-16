@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { ApiService } from '../services/api';
-import { useToken } from '../contexts/TokenContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
-  onLoginSuccess: (token: string) => void;
+  onLoginSuccess: () => void;
   onClose: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess, onClose }) => {
-  const { setToken } = useToken();
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -24,9 +24,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess, onClose }) => {
     setError(null);
 
     try {
-      const { token } = await ApiService.login(username, password);
-      setToken(token);
-      onLoginSuccess(token);
+      await ApiService.login(username, password);
+      await login(); // Update authentication state
+      onLoginSuccess();
       onClose();
     } catch (err) {
       if (err instanceof Error) {
