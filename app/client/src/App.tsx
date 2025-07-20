@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import ShortenUrlForm from './components/ShortenUrlForm';
 import Login from './components/Login';
+import Registration from './components/Registration';
 import UrlList from './components/UrlList';
 import ErrorMessage from './components/Error';
 import { ErrorWithStatus } from './services/ErrorWithCode';
@@ -12,6 +13,7 @@ import './styles/main.css';
 const AppContent: React.FC = () => {
   const { isAuthenticated, logout, username } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(false);
   const [urlData, setUrlData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +55,10 @@ const AppContent: React.FC = () => {
     setShowLogin(false);
   };
 
+  const handleRegistrationSuccess = () => {
+    setShowRegistration(false);
+  };
+
   const handleLogout = async () => {
     await logout();
     setUrlData(null);
@@ -91,7 +97,10 @@ const AppContent: React.FC = () => {
               <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
-            <button onClick={() => setShowLogin(true)}>Login</button>
+            <>
+              <button onClick={() => setShowLogin(true)}>Login</button>
+              <button onClick={() => setShowRegistration(true)}>Sign up</button>
+            </>
           )}
         </div>
       </header>
@@ -118,6 +127,13 @@ const AppContent: React.FC = () => {
         <Login 
           onLoginSuccess={handleLoginSuccess} 
           onClose={() => setShowLogin(false)} 
+        />
+      )}
+
+      {showRegistration && (
+        <Registration
+          onRegistrationSuccess={handleRegistrationSuccess}
+          onClose={() => setShowRegistration(false)}
         />
       )}
     </div>
