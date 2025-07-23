@@ -2,16 +2,17 @@ import unittest
 import sys
 import os
 
+
 # Add the parent directory to the path so we can import the validators module directly
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "app"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Import directly from validators module to avoid Flask dependencies
-import validators
-
-validate_username = validators.validate_username
-validate_password = validators.validate_password
-validate_credentials = validators.validate_credentials
-MINIMUM_USERNAME_LENGTH = validators.MINIMUM_USERNAME_LENGTH
+from validators import (
+    validate_username,
+    validate_password,
+    validate_credentials,
+    MINIMUM_USERNAME_LENGTH,
+)
 
 
 class TestValidateUsername(unittest.TestCase):

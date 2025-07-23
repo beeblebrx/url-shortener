@@ -1,8 +1,8 @@
 from flask import Blueprint, redirect, jsonify, abort, request, make_response
-from app.models import User, URL
-from app import db
-from app.auth import generate_jwt, require_user_auth, get_current_user
-from app.validators import validate_credentials
+from ..models import User, URL
+from .. import db
+from ..auth import generate_jwt, require_user_auth, get_current_user
+from ..validators import validate_credentials
 import bcrypt
 import secrets
 
