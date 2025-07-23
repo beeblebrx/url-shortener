@@ -34,7 +34,7 @@ export const useRegistration = () => {
             return false;
         }
 
-        const passwordRegex = /^(?=.*[1-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+        const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
         if (!passwordRegex.test(password)) {
             setError(
