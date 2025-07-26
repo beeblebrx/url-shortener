@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from ..models import URL
-from ..auth import require_user_auth, get_current_user
-from ..utils import generate_short_code, is_valid_url, build_short_url
-from .. import db
+from app.server.models import URL
+from app.server.auth import require_user_auth, get_current_user
+from app.server.utils import generate_short_code, is_valid_url, build_short_url
+from app.server import db
 
 user_bp = Blueprint("user", __name__)
 
