@@ -69,7 +69,7 @@ export class ApiService {
         }
     }
 
-    static async login(username: string, password: string) {
+    static async sendLogin(username: string, password: string) {
         const response = await fetch(`${API_BASE_URL}/login`, {
             method: 'POST',
             headers: {

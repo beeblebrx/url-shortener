@@ -12,7 +12,7 @@ const Registration: React.FC<RegistrationProps> = ({
     onRegistrationSuccess,
     onClose,
 }) => {
-    const { login } = useAuth();
+    const { checkAuthStatus } = useAuth();
     const {
         username,
         setUsername,
@@ -37,7 +37,7 @@ const Registration: React.FC<RegistrationProps> = ({
 
         try {
             await ApiService.register(username, password);
-            await login(); // Update authentication state
+            await checkAuthStatus(); // Update authentication state
             onRegistrationSuccess();
             onClose();
         } catch (err) {
