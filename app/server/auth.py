@@ -1,11 +1,9 @@
 from functools import wraps
-from flask import request, jsonify, g
+from flask import current_app, request, jsonify, g
 from app.server.models import User, Admin
 import jwt
 import os
 from datetime import datetime, timedelta, timezone
-
-SECRET_KEY = os.getenv("SECRET_KEY")
 
 
 def generate_jwt(username, role, access_token):
@@ -16,7 +14,8 @@ def generate_jwt(username, role, access_token):
         "access_token": access_token,
         "exp": datetime.now(timezone.utc) + timedelta(days=1),  # Token expires in 1 day
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    secret_key = current_app.config["SECRET_KEY"]
+    return jwt.encode(payload, secret_key, algorithm="HS256")
 
 
 def require_user_auth(f):
@@ -30,7 +29,8 @@ def require_user_auth(f):
             return jsonify({"error": "Authentication required"}), 401
 
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            secret_key = current_app.config["SECRET_KEY"]
+            payload = jwt.decode(token, secret_key, algorithms=["HS256"])
             username = payload["username"]
             role = payload["role"]
             access_token = payload["access_token"]
@@ -66,7 +66,8 @@ def require_admin_auth(f):
             return jsonify({"error": "Authentication required"}), 401
 
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            secret_key = current_app.config["SECRET_KEY"]
+            payload = jwt.decode(token, secret_key, algorithms=["HS256"])
             username = payload["username"]
             role = payload["role"]
             access_token = payload["access_token"]

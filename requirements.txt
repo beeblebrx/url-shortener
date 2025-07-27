@@ -7,3 +7,5 @@ python-dotenv==1.0.0
 validators==0.22.0
 PyJWT
 bcrypt
+pytest
+pytest-cov
