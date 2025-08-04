@@ -1,0 +1,93 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Development files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Node modules (will be installed in container)
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CDK
+cdk/node_modules
+cdk/cdk.out
+cdk/*.js
+cdk/*.d.ts
+
+# Build artifacts
+app/client/dist
+app/client/node_modules
+
+# Development containers
+docker-compose.yml
+docker-compose.override.yml
+
+# Test files
+test
+tests
+*.test.js
+*.test.ts
+*.test.tsx
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Local development scripts
+start-dev.sh
+stop-dev.sh
+tmux.sh

@@ -12,6 +12,13 @@ public_bp = Blueprint("public", __name__)
 @public_bp.route("/<short_code>")
 def redirect_url(short_code):
     """Redirect to the original URL using the short code"""
+    # Skip if this looks like a static file (has file extension)
+    if "." in short_code:
+        # Don't handle this route, let it fall through to the main app
+        from flask import current_app
+
+        return current_app.send_static_file(short_code)
+
     # Find the URL by short code
     url = URL.query.filter_by(short_code=short_code).first()
 

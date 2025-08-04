@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -10,7 +10,7 @@ migrate = Migrate()
 
 
 def create_app(config_name=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../static", static_url_path="/static")
 
     # Load configuration
     if config_name is None:
@@ -27,13 +27,18 @@ def create_app(config_name=None):
     # Configure CORS
     CORS(
         app,
-        origins=["http://localhost:3000", "http://192.168.1.242:3000"],
+        origins=["*"],  # Allow all origins (in production ALB will handle this)
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         supports_credentials=True,
     )
 
     # Import models to ensure they're registered with SQLAlchemy
     from . import models
+
+    # Serve React frontend
+    @app.route("/")
+    def serve_frontend():
+        return send_file(os.path.join(app.static_folder, "index.html"))
 
     # Register blueprints
     from .routes.public import public_bp

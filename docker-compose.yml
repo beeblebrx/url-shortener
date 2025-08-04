@@ -22,5 +22,17 @@ services:
     depends_on:
       - db
 
+  app:
+    build: .
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: username
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: postgres
+      SECRET_KEY: suuriSalaisuus
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
 volumes:
   postgres_data:
